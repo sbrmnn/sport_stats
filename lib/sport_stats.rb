@@ -34,15 +34,17 @@ module SportStats
     private
 
     def convert_player_ids(player_names)
-
+     
         if child_stat_type == HitterStats
             @stat.batting_avg_most_imp && @stat.batting_avg_most_imp.map!{|l| [player_names[l[0]],l[1]].flatten}
             @stat.slugging_percentage_list && @stat.slugging_percentage_list[@stat.slugging_percentage_list.keys.first].map!{|l| [ player_names[l[0]],l[1]].flatten}
             @stat.triple_crown_winners  &&  @stat.triple_crown_winners.keys.each do |key|
-            @stat.triple_crown_winners[key]&& @stat.triple_crown_winners[key]!= "(No winner)" && @stat.triple_crown_winners[key] = player_names[@stat.triple_crown_winners[key][0]].first
+            @stat.triple_crown_winners[key]&& @stat.triple_crown_winners[key].class!= String && @stat.triple_crown_winners[key] = player_names[@stat.triple_crown_winners[key][0]].first
              end
+            
 
         end
+        
 
       end
 
@@ -186,8 +188,8 @@ module SportStats
             rbi = filtered_data.group_by{|l|l[header_col["RBI"]].to_i}
             batting_avg = filtered_data.group_by{|l| l[14]}
             triple_crown_winner= batting_avg[batting_avg.keys.max] & rbi[rbi.keys.max] & home_runs[home_runs.keys.max]
-
-            if triple_crown_winner
+            
+            if triple_crown_winner && triple_crown_winner.any? # The only time triple_crown winner will return false is if there are no players listed in a particular league in a given year, otherwise, triple_crown_winner will almost always return [] .  
               triple_crown_winner.first
             else
               "(No winner)"
