@@ -1,10 +1,19 @@
 # SportStats
 
-Overview:  For this scenario, we have been asked to write an application that will be used to provide information about baseball player statistics.  Approach this problem as if it is an application going to production.  We don't expect it to be perfect (no production code is), but we also don't want you to hack together a throw-away script.  This should be representative of something that you would be comfortable releasing to a production environment.  Also, spend whatever amount of time you think is reasonable.  If you don't get all the requirements completed, that's ok.  Just do the best you can with the time that you have available.  You may use whatever gems, frameworks and tools that you think are appropriate, just provide any special setup instructions when you submit your solution.
+Overview:
+---------- 
 
-Assumptions:  All requests currently are based on data in the hitting file.  Future requests of the system will require data from a pitching file as well.  Consider this in the design.
+  For this scenario, we have been asked to write an application that will be used to provide information about baseball player statistics.  Approach this problem as if it is an application going to production.  We don't expect it to be perfect (no production code is), but we also don't want you to hack together a throw-away script.  This should be representative of something that you would be comfortable releasing to a production environment.  Also, spend whatever amount of time you think is reasonable.  If you don't get all the requirements completed, that's ok.  Just do the best you can with the time that you have available.  You may use whatever gems, frameworks and tools that you think are appropriate, just provide any special setup instructions when you submit your solution.
 
-Requirements: When the application is run, use the provided data and calculate the following results and write them to STDOUT.
+Assumptions:
+------------  
+
+All requests currently are based on data in the hitting file.  Future requests of the system will require data from a pitching file as well.  Consider this in the design.
+
+Requirements:
+------------- 
+
+When the application is run, use the provided data and calculate the following results and write them to STDOUT.
 
 1) Most improved batting average( hits / at-bats) from 2009 to 2010.  Only include players with at least 200 at-bats.
 2) Slugging percentage for all players on the Oakland A's (teamID = OAK) in 2007. 
