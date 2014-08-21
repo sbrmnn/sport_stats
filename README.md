@@ -80,6 +80,6 @@ Run Code (must be run within the application's root directory):
     
     $ sport_stats
 
-Run Tests:
+Run Tests (must be run within the application's root directory):
     
     $ rspec spec/
