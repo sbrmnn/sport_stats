@@ -7,9 +7,9 @@ Gem::Specification.new do |spec|
   spec.name          = "sport_stats"
   spec.version       = SportStats::VERSION
   spec.authors       = ["gth824c@gmail.com"]
-  spec.email         = ["TODO: Write your email address"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.email         = ["gth824c@gmail.com"]
+  spec.summary       = %q{This package prints out sports stats with a give csv input}
+  spec.description   = %q{TBA}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -20,4 +20,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.6"
   spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec"
+  spec.add_dependency "fastest-csv"
 end
