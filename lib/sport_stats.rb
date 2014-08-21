@@ -174,7 +174,7 @@ module SportStats
         
         def triple_crown_calc(csv_file,league,year)
                 header_col = csv_file.header_index_hash
-                filtered_data = csv_file.data.select{|l| l[1].to_i == year && l[2]==league && (l[header_col["AB"]] ? l[header_col["AB"]].to_i : 0) > 400}.map{|l|[l,batting_avg_calc(l[header_col["H"]].to_i, l[header_col["AB"]].to_i)].flatten!}
+                filtered_data = csv_file.data.select{|l| l[header_col["yearID"]].to_i == year && l[header_col["league"]]==league && (l[header_col["AB"]] ? l[header_col["AB"]].to_i : 0) > 400}.map{|l|[ l, batting_avg_calc(l[header_col["H"]].to_i, l[header_col["AB"]].to_i)].flatten!}
                 home_runs = filtered_data.group_by{|l|l[header_col["HR"]].to_i}
                 rbi = filtered_data.group_by{|l|l[header_col["RBI"]].to_i}
                 batting_avg = filtered_data.group_by{|l| l[14]}
