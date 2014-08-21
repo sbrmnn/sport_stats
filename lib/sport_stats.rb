@@ -120,7 +120,7 @@ module SportStats
                 filtered_csv_by_team = csv_file.data.group_by{|e| e[header_col["teamID"]]}[teamID]
                 
                 if filtered_csv_by_team
-                    filtered_csv_by_team_year = filtered_csv_by_team.select{|l| l[1].to_i==year}
+                    filtered_csv_by_team_year = filtered_csv_by_team.select{|l| l[header_col["yearID"]].to_i==year}
                     @slugging_percentage_list= {"#{teamID}"=>filtered_csv_by_team_year.map{|l| [l[header_col["playerID"]], slugging_percentage_calc(l[header_col["H"]].to_i, l[header_col["2B"]].to_i, l[header_col["3B"]].to_i,l[header_col["HR"]].to_i, l[header_col["AB"]].to_i)] }.sort_by{|obj| obj[1]}.reverse!}
                 else
                     @slugging_percentage_list = nil
