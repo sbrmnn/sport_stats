@@ -57,7 +57,7 @@ Add this line to your application's Gemfile:
 
     $ git clone git@github.com:sbrmnn/sport_stats.git
 
-Change directory to the application root:
+Change directory to the application's root:
 
     $ cd sport_stats
 
