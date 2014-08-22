@@ -53,7 +53,7 @@ Please note: We are looking for you to demonstrate you knowledge related to comm
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Download application from github to your local directory:
 
     $ git clone git@github.com:sbrmnn/sport_stats.git
 
