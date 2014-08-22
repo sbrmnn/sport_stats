@@ -3,10 +3,10 @@ require "fastest_csv"
 require "file_obj"
 
 module SportStats
-  
+
   class ConvertPlayerIdtoNames
     attr_reader :stat
-    
+
     def initialize(obj, player_name_file_path)
       if obj.is_a? Stats
         @stat = obj
@@ -22,9 +22,9 @@ module SportStats
       end
       convert_player_ids(player_names)
     end
-  
+
     protected
-  
+
     def child_stat_type
       @stat.class
     end
@@ -40,16 +40,16 @@ module SportStats
         end
       end
     end
-    
+
   end
 
   class Stats
-    
+
     def initialize(file_obj, options={})
       raise "File Object input not of CSVObj type"  unless file_obj.class == FileObj::CSVObj
       raise "Options input should be a hash"  unless options.class == Hash
     end
-    
+
   end
 
   class BaseballStats < Stats
@@ -57,7 +57,7 @@ module SportStats
 
   class HitterStats < BaseballStats
     attr_reader :batting_avg_most_imp, :slugging_percentage_list, :triple_crown_winners
-    
+
     def initialize(file_obj, options={})
       super
       hitter_file?(file_obj)
@@ -146,7 +146,7 @@ module SportStats
       batting_avg_end_yr = batting_avg_calc(hits_end_yr,ab_end_yr)
       return ((batting_avg_end_yr -  batting_avg_start_yr).fdiv((batting_avg_start_yr))*100).round(2) # Calculates the improvement of batting average as a percentage.
     end
-    
+
     def slugging_percentage_calc(hits,doubles,triples,home_runs, at_bats)
       at_bats = at_bats ? at_bats : 0
       if at_bats>=1
@@ -159,7 +159,7 @@ module SportStats
     def batting_avg_calc(hits,at_bats)
       hits.fdiv(at_bats).round(3)
     end
-    
+
     def triple_crown_calc(csv_file,league,year)
       header_col = csv_file.header_index_hash
       filtered_data = csv_file.data.select{|l| l[header_col["yearID"]].to_i == year && l[header_col["league"]]==league && (l[header_col["AB"]] ? l[header_col["AB"]].to_i : 0) > 400}.map{|l|[ l, batting_avg_calc(l[header_col["H"]].to_i, l[header_col["AB"]].to_i)].flatten!}
@@ -167,7 +167,7 @@ module SportStats
       rbi = filtered_data.group_by{|l|l[header_col["RBI"]].to_i}
       batting_avg = filtered_data.group_by{|l| l[14]}
       triple_crown_winner= batting_avg[batting_avg.keys.max] & rbi[rbi.keys.max] & home_runs[home_runs.keys.max]
-      if triple_crown_winner && triple_crown_winner.any? # The only time triple_crown winner will return false is if there are no players listed in a particular league in a given year, otherwise, triple_crown_winner will almost always return [] .  
+      if triple_crown_winner && triple_crown_winner.any? # The only time triple_crown winner will return false is if there are no players listed in a particular league in a given year, otherwise, triple_crown_winner will almost always return [] if there is no triple crown winner for a particular league .  
         triple_crown_winner.first
       else
         "(No winner)"
@@ -179,7 +179,7 @@ module SportStats
       column_names = file_obj.header
       hitter_file_columns == column_names & hitter_file_columns # Checks if all columns that are supposed to be in the hitter file are include in the csv.
     end
-    
+
   end
 
   class PitcherStats < BaseballStats
