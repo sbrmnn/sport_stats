@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'active_support/core_ext/kernel/reporting'
 
 describe "sport_stats" do 
 
@@ -32,7 +33,7 @@ describe "sport_stats" do
     it "should should include player name when passing HitterStats object into ConvertPlayerIdtoNames object" do
         a = SportStats::HitterStats.new(FileObj::CSVObj.new("./spec/test_assets/hitter_file_test.csv"),{:slugging_pct=>{:year=>2010,:team=>"PHI"}})
         b = SportStats::ConvertPlayerIdtoNames.new(a,"./spec/test_assets/Master-small.csv")
-         expect(b.stat.batting_avg_most_imp).to eq([["carpean01", "1985", "Andrew", "Carpenter", 233.0]])
+         expect(b.stat.batting_avg_most_imp).to eq([["Andrew", "Carpenter", 233.0]])
     end
     
     
@@ -49,7 +50,7 @@ describe "sport_stats" do
         a = SportStats::HitterStats.new(FileObj::CSVObj.new("./spec/test_assets/hitter_file_test.csv"),{:slugging_pct=>{:year=>2010,:team=>"PHI"}})
         b= SportStats::ConvertPlayerIdtoNames.new(a,"./spec/test_assets/Master-small.csv")
         
-        expect(b.stat.slugging_percentage_list).to eq({"PHI"=>[["cairomi01", "1974", "Miguel", "Cairo", 0.624], ["carpean01", "1985", "Andrew", "Carpenter", 0.333], [nil, 0.095]]}) # A entry of nil, ex. [nil, 0.095] means no player name was found for the particular player id.
+        expect(b.stat.slugging_percentage_list).to eq({"PHI"=>[["Miguel", "Cairo", 0.624], ["Andrew", "Carpenter", 0.333], [nil, 0.095]]}) # A entry of nil, ex. [nil, 0.095] means no player name was found for the particular player id.
     end
 
     
@@ -71,7 +72,41 @@ describe "sport_stats" do
     it "should return the most improved player with regards to batting average with at bats > 200 and with name" do
         a = SportStats::HitterStats.new(FileObj::CSVObj.new("./spec/test_assets/hitter_file_test.csv"),{:slugging_pct=>{:year=>2010,:team=>"PHI"}})
         b= SportStats::ConvertPlayerIdtoNames.new(a,"./spec/test_assets/Master-small.csv")
-        expect(a.batting_avg_most_imp).to eq([["carpean01", "1985", "Andrew", "Carpenter", 233.0]])
+        expect(a.batting_avg_most_imp).to eq([["Andrew", "Carpenter", 233.0]])
+    end
+    
+    it "should print out most improved batting average list" do
+        
+        output = capture(:stdout) do
+            a = SportStats::HitterStats.new(FileObj::CSVObj.new("./spec/test_assets/hitter_file_test.csv"),{:slugging_pct=>{:year=>2010,:team=>"PHI"}})
+            b= SportStats::ConvertPlayerIdtoNames.new(a,"./spec/test_assets/Master-small.csv")
+            a.batting_avg_list_out
+            a.slugging_pct_list_out
+        end
+        expect(output).to include 'Andrew Carpenter 233.0'
+        
+    end
+    
+    it "should print out slugging pct list" do
+        
+        output = capture(:stdout) do
+            a = SportStats::HitterStats.new(FileObj::CSVObj.new("./spec/test_assets/hitter_file_test.csv"),{:slugging_pct=>{:year=>2010,:team=>"PHI"}})
+            b= SportStats::ConvertPlayerIdtoNames.new(a,"./spec/test_assets/Master-small.csv")
+            a.slugging_pct_list_out
+        end
+        expect(output).to include 'Slugging Percentage in PHI'
+        
+    end
+    
+    it "should print out triple crown" do
+        
+        output = capture(:stdout) do
+            a = SportStats::HitterStats.new(FileObj::CSVObj.new("./spec/test_assets/hitter_file_test.csv"),{:slugging_pct=>{:year=>2010,:team=>"PHI"}})
+            b= SportStats::ConvertPlayerIdtoNames.new(a,"./spec/test_assets/Master-small.csv")
+            a.triple_crown_out
+        end
+        expect(output).to include '["cabremi01", "1983", "Miguel", "Cabrera"]'
+        
     end
     
     
