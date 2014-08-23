@@ -20,7 +20,7 @@ module SportStats
       else
         raise "File path input should be a string."
       end
-      convert_player_ids(player_names)
+      convert_player_ids(player_names, header_col)
     end
 
     protected
@@ -31,17 +31,31 @@ module SportStats
 
     private
 
-    def convert_player_ids(player_names)
+    def convert_player_ids(player_names, player_name_col)
+        
+        filter_name_column = lambda{|stat_player,stat_type_player_id_index| # This lambda filters out the birth year and player id column from data in the master-small.csv.
+            player_names[stat_player[stat_type_player_id_index]] && player_names[stat_player[stat_type_player_id_index]].first - [player_names[stat_player[stat_type_player_id_index]].first[player_name_col["playerID"]]] - [player_names[stat_player[stat_type_player_id_index]].first[player_name_col["birthYear"]]]
+        }
+        player_id_index_within_stat_data = 0 # This is the player id index from each of the entries in the stats object instance variables.
+        
       if child_stat_type == HitterStats
-        @stat.batting_avg_most_imp && @stat.batting_avg_most_imp.map!{|l| [player_names[l[0]],l[1]].flatten}
-        @stat.slugging_percentage_list && @stat.slugging_percentage_list[@stat.slugging_percentage_list.keys.first].map!{|l| [ player_names[l[0]],l[1]].flatten}
-        @stat.triple_crown_winners  &&  @stat.triple_crown_winners.keys.each do |key|
-        @stat.triple_crown_winners[key]&& @stat.triple_crown_winners[key].class!= String && @stat.triple_crown_winners[key] = player_names[@stat.triple_crown_winners[key][0]].first
+        if @stat.batting_avg_most_imp
+             @stat.batting_avg_most_imp.map!{|l| [filter_name_column.call(l, player_id_index_within_stat_data),l[1]].flatten}
+            
+        end
+        if @stat.slugging_percentage_list && @stat.slugging_percentage_list.any?
+            @stat.slugging_percentage_list[@stat.slugging_percentage_list.keys.first].map!{|l| [ l && filter_name_column.call(l, player_id_index_within_stat_data), l[1]].flatten}.group_by{|l| l.last}
+           
+        end
+        if @stat.triple_crown_winners
+            @stat.triple_crown_winners.keys.each do |key|
+                @stat.triple_crown_winners[key]&& @stat.triple_crown_winners[key].class!= String && @stat.triple_crown_winners[key] = player_names[@stat.triple_crown_winners[key][0]].first
+                
+            end
         end
       end
     end
-
-  end
+end
 
   class Stats
 
@@ -82,15 +96,16 @@ module SportStats
     end
 
     def batting_avg_list_out
-      puts "Most improved batting average percentage wise:" << " " << "#{@batting_avg_most_imp}"
+        puts "Most improved batting average percentage wise:" << "\n\n" << "#{@batting_avg_most_imp.map{|l| l.join(' ')}.join(',')}"
     end
 
     def slugging_pct_list_out
-      puts "Slugging Percentage:" << " " << "#{@slugging_percentage_list}"
+        team_name = @slugging_percentage_list.keys.first
+      puts "Slugging Percentage in #{team_name}:" << "\n\n" << "#{@slugging_percentage_list[team_name].map{|l| l.join(' ')}.join(', ')}"
     end
 
     def triple_crown_out
-      puts "Triple Crown winner by league:" << " " << "#{@triple_crown_winners}"
+      puts "Triple Crown winner by league:" << "\n\n" << "#{@triple_crown_winners}"
     end
 
     private
