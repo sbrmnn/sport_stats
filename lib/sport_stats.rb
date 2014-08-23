@@ -32,12 +32,10 @@ module SportStats
     private
 
     def convert_player_ids(player_names, player_name_col)
-        
-        filter_name_column = lambda{|stat_player,stat_type_player_id_index| # This lambda filters out the birth year and player id column from data in the master-small.csv.
-            player_names[stat_player[stat_type_player_id_index]] && player_names[stat_player[stat_type_player_id_index]].first - [player_names[stat_player[stat_type_player_id_index]].first[player_name_col["playerID"]]] - [player_names[stat_player[stat_type_player_id_index]].first[player_name_col["birthYear"]]]
-        }
-        player_id_index_within_stat_data = 0 # This is the player id index from each of the entries in the stats object instance variables.
-        
+      filter_name_column = lambda{|stat_player,stat_type_player_id_index| # This lambda filters out the birth year and player id column from data in the master-small.csv.
+        player_names[stat_player[stat_type_player_id_index]] && player_names[stat_player[stat_type_player_id_index]].first - [player_names[stat_player[stat_type_player_id_index]].first[player_name_col["playerID"]]] - [player_names[stat_player[stat_type_player_id_index]].first[player_name_col["birthYear"]]]
+      }
+      player_id_index_within_stat_data = 0 # This is the player id index from each of the entries in the stats object instance variables.
       if child_stat_type == HitterStats
         if @stat.batting_avg_most_imp
              @stat.batting_avg_most_imp.map!{|l| [filter_name_column.call(l, player_id_index_within_stat_data),l[1]].flatten}
