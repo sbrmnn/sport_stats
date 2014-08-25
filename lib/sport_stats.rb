@@ -167,7 +167,7 @@ end
       if at_bats>=1
         (((hits-doubles-triples-home_runs) + (2*doubles) + (3*triples) +(4*home_runs)).fdiv(at_bats)).round(3)
       else
-        0
+        0.0
       end
     end
 
