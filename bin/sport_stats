@@ -6,11 +6,11 @@ require 'fastest-csv'
 a = SportStats::HitterStats.new(FileObj::CSVObj.new("./assets/Batting-07-12.csv"))
 b = SportStats::ConvertPlayerIdtoNames.new(a,"./assets/Master-small.csv")
 puts "\n\n"
-a.batting_avg_list_out
+b.stat.batting_avg_list_out
 puts "\n\n"
-a.slugging_pct_list_out
+b.stat.slugging_pct_list_out
 puts "\n\n"
-a.triple_crown_out
+b.stat.triple_crown_out
 puts "\n\n"
 
 
