@@ -5,8 +5,7 @@ require "file_obj"
 module SportStats
 
   class ConvertPlayerIdtoNames
-    attr_reader :stat
-
+    attr_reader :batting_avg_most_imp, :slugging_percentage_list, :triple_crown_winners, :stat
     def initialize(obj, player_name_file_path)
       if obj.is_a? Stats
         @stat = obj
@@ -38,17 +37,20 @@ module SportStats
       player_id_index_within_stat_data = 0 # This is the player id index from each of the entries in the stats object instance variables.
       if child_stat_type == HitterStats
         if @stat.batting_avg_most_imp
-             @stat.batting_avg_most_imp.map!{|l| [filter_name_column.call(l, player_id_index_within_stat_data),l[1]].flatten}
-            
+          @batting_avg_most_imp = @stat.batting_avg_most_imp.map{|l| [filter_name_column.call(l, player_id_index_within_stat_data),l[1]].flatten}
         end
         if @stat.slugging_percentage_list && @stat.slugging_percentage_list.any?
-            @stat.slugging_percentage_list[@stat.slugging_percentage_list.keys.first].map!{|l| [ l && filter_name_column.call(l, player_id_index_within_stat_data), l[1]].flatten}.group_by{|l| l.last}
-           
+          @slugging_percentage_list = Hash.new(nil)
+          @slugging_percentage_list[@stat.slugging_percentage_list.keys.first] = @stat.slugging_percentage_list[@stat.slugging_percentage_list.keys.first].map{|l| [ l && filter_name_column.call(l, player_id_index_within_stat_data), l[1]].flatten}
         end
         if @stat.triple_crown_winners
+          @triple_crown_winners = Hash.new(nil)
             @stat.triple_crown_winners.keys.each do |key|
-                @stat.triple_crown_winners[key]&& @stat.triple_crown_winners[key].class!= String && @stat.triple_crown_winners[key] = player_names[@stat.triple_crown_winners[key][0]].first
-                
+                 if @stat.triple_crown_winners[key]&& @stat.triple_crown_winners[key].class!= String
+                   @triple_crown_winners[key] = player_names[@stat.triple_crown_winners[key][0]].first
+                 else
+                   @triple_crown_winners[key] = @stat.triple_crown_winners[key]
+                 end
             end
         end
       end
@@ -93,16 +95,25 @@ end
       end
     end
 
-    def batting_avg_list_out
+    def batting_avg_list_out(player_name_path = nil)
+        if player_name_path
+          @batting_avg_most_imp =  SportStats::ConvertPlayerIdtoNames.new(self, player_name_path).batting_avg_most_imp
+        end
         puts "Most improved batting average percentage wise:" << "\n\n" << "#{@batting_avg_most_imp.map{|l| l.join(' ')}.join(',')}"
     end
 
-    def slugging_pct_list_out
-        team_name = @slugging_percentage_list.keys.first
+    def slugging_pct_list_out(player_name_path = nil)
+      if player_name_path
+        @slugging_percentage_list =  SportStats::ConvertPlayerIdtoNames.new(self, player_name_path).slugging_percentage_list
+      end
+      team_name = @slugging_percentage_list.keys.first
       puts "Slugging Percentage in #{team_name}:" << "\n\n" << "#{@slugging_percentage_list[team_name].map{|l| l.join(' ')}.join(', ')}"
     end
 
-    def triple_crown_out
+    def triple_crown_out(player_name_path = nil)
+      if player_name_path
+        @triple_crown_winners= SportStats::ConvertPlayerIdtoNames.new(self, player_name_path).triple_crown_winners
+      end
       puts "Triple Crown winner by league:" << "\n\n" << "#{@triple_crown_winners}"
     end
 
