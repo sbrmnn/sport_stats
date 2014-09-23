@@ -110,7 +110,7 @@ end
       else
          slugging_percentage_list = @slugging_percentage_list
       end
-      team_name = @slugging_percentage_list.keys.first
+      team_name = slugging_percentage_list.keys.first
       puts "Slugging Percentage in #{team_name}:" << "\n\n" << "#{slugging_percentage_list[team_name].map{|l| l.join(' ')}.join(', ')}"
     end
 
