@@ -97,24 +97,30 @@ end
 
     def batting_avg_list_out(player_name_path = nil)
         if player_name_path
-          @batting_avg_most_imp =  SportStats::ConvertPlayerIdtoNames.new(self, player_name_path).batting_avg_most_imp
+          batting_avg_most_imp =  SportStats::ConvertPlayerIdtoNames.new(self, player_name_path).batting_avg_most_imp
+        else
+          batting_avg_most_imp = @batting_avg_most_imp
         end
-        puts "Most improved batting average percentage wise:" << "\n\n" << "#{@batting_avg_most_imp.map{|l| l.join(' ')}.join(',')}"
+        puts "Most improved batting average percentage wise:" << "\n\n" << "#{batting_avg_most_imp.map{|l| l.join(' ')}.join(',')}"
     end
 
     def slugging_pct_list_out(player_name_path = nil)
       if player_name_path
-        @slugging_percentage_list =  SportStats::ConvertPlayerIdtoNames.new(self, player_name_path).slugging_percentage_list
+        slugging_percentage_list =  SportStats::ConvertPlayerIdtoNames.new(self, player_name_path).slugging_percentage_list
+      else
+         slugging_percentage_list = @slugging_percentage_list
       end
       team_name = @slugging_percentage_list.keys.first
-      puts "Slugging Percentage in #{team_name}:" << "\n\n" << "#{@slugging_percentage_list[team_name].map{|l| l.join(' ')}.join(', ')}"
+      puts "Slugging Percentage in #{team_name}:" << "\n\n" << "#{slugging_percentage_list[team_name].map{|l| l.join(' ')}.join(', ')}"
     end
 
     def triple_crown_out(player_name_path = nil)
       if player_name_path
-        @triple_crown_winners= SportStats::ConvertPlayerIdtoNames.new(self, player_name_path).triple_crown_winners
+        triple_crown_winners= SportStats::ConvertPlayerIdtoNames.new(self, player_name_path).triple_crown_winners
+      else
+        triple_crown_winners = @triple_crown_winners
       end
-      puts "Triple Crown winner by league:" << "\n\n" << "#{@triple_crown_winners}"
+      puts "Triple Crown winner by league:" << "\n\n" << "#{triple_crown_winners}"
     end
 
     private
