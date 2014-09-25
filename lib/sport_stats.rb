@@ -75,21 +75,19 @@ end
     def initialize(file_obj, options={})
       super
       hitter_file?(file_obj)
-      batting_avg_option = options[:batting_avg]
-      slugging_pct_option = options[:slugging_pct]
-      triple_crown_option = options[:triple_crown]
-      if batting_avg_option && batting_avg_option[:start_year] && batting_avg_option[:end_year] && batting_avg_option[:min_at_bats]
-        batting_avg_imp(file_obj, batting_avg_option[:start_year], batting_avg_option[:end_year], batting_avg_option[:min_at_bats])
+
+      if options[:batting_avg] && options[:batting_avg][:start_year] && options[:batting_avg][:end_year] && options[:batting_avg][:min_at_bats]
+        batting_avg_imp(file_obj, options[:batting_avg][:start_year], options[:batting_avg][:end_year], options[:batting_avg][:min_at_bats])
       else
         batting_avg_imp(file_obj, 2009, 2010, 200)
       end
-      if slugging_pct_option && slugging_pct_option[:year] && slugging_pct_option[:team]
-        slugging_pct_by_team(file_obj,slugging_pct_option[:year],slugging_pct_option[:team])
+      if options[:slugging_pct] && options[:slugging_pct][:year] && options[:slugging_pct][:team]
+        slugging_pct_by_team(file_obj,options[:slugging_pct][:year],options[:slugging_pct][:team])
       else
         slugging_pct_by_team(file_obj,2007,"OAK")
       end
-      if triple_crown_option && triple_crown_option[:year]
-        triple_crown(file_obj,triple_crown_option[:year])
+      if options[:triple_crown] && options[:triple_crown][:year]
+        triple_crown(file_obj,options[:triple_crown][:year])
       else
         triple_crown(file_obj, 2012)
       end
@@ -157,6 +155,18 @@ end
     end
 
     def batting_avg_imp_calc(player_array, min_at_bats, header_index={})
+      batting_h_ab_hash = sum_hits_and_at_bats_for_player_by_year(player_array,header_index) # Returns a hash which contains the total hits and at bats for a given year(s) for a player. Ex. {"2010"=>{:h=>70, :ab=>210}, "2009"=>{:h=>20, :ab=>200}}
+      keys = batting_h_ab_hash.keys.sort # Returns array of keys which contains the start year and end year. Ie. [2009, 2010]
+      start_year = keys.first
+      end_year = keys.last
+      return nil if (batting_h_ab_hash[start_year][:ab] < min_at_bats || batting_h_ab_hash[end_year][:ab] < min_at_bats)
+      batting_avg_start_yr = batting_avg_calc(batting_h_ab_hash[start_year][:h], batting_h_ab_hash[start_year][:ab])
+      batting_avg_end_yr = batting_avg_calc(batting_h_ab_hash[end_year][:h], batting_h_ab_hash[end_year][:ab])
+      return ((batting_avg_end_yr -  batting_avg_start_yr).fdiv((batting_avg_start_yr))*100).round(2) # Calculates the improvement of batting average as a percentage.
+    end
+
+    def sum_hits_and_at_bats_for_player_by_year(player_array, header_index={})
+
       batting_player_array_hash = player_array.group_by{|e| e[header_index["yearID"]]} # Takes the player array input and creates a hash with the year as the key and the player arrays corresponding to the year as the value. Ex. {"2010"=>[["hinsker01", "2010", "NL", "ATL", "131", "281", "38", "72", "21", "1", "11", "51", "0", "0"]], "2009"=>[["hinsker01", "2009", "NL", "PIT", "54", "106", "18", "27", "9", "0", "1", "11", "0", "0"], ["hinsker01", "2009", "AL", "NYA", "39", "84", "13", "19", "3", "0", "7", "14", "1", "0"]]}
       batting_h_ab_hash = Hash.new({:h=>0,:ab=>0}) # Hash whose default value is a hash with no hits and no at bats.
       batting_player_array_hash.each do |key, array| # Iterates through the batting_player_array hash to sum up the total at bats and hits for each year for a particular player and stores the info in the batting_h_ab_hash with the key corresponding to the year and the value corresponding to a hash consisiting of the total hits and at_bats for the year.
@@ -164,17 +174,9 @@ end
           batting_h_ab_hash.store(key, {:h=>batting_h_ab_hash[key][:h]+array[i][header_index["H"]].to_i, :ab=>batting_h_ab_hash[key][:ab]+array[i][header_index["AB"]].to_i })
         end
       end
-      keys = batting_h_ab_hash.keys.sort # Returns array of keys which contains the start year and end year. Ie. [2009, 2010]
-      start_year = keys.first
-      end_year = keys.last
-      return nil if (batting_h_ab_hash[start_year][:ab] < min_at_bats || batting_h_ab_hash[end_year][:ab] < min_at_bats)
-      hits_start_yr = batting_h_ab_hash[start_year][:h]
-      hits_end_yr = batting_h_ab_hash[end_year][:h]
-      ab_start_yr = batting_h_ab_hash[start_year][:ab]
-      ab_end_yr = batting_h_ab_hash[end_year][:ab]
-      batting_avg_start_yr = batting_avg_calc(hits_start_yr,ab_start_yr)
-      batting_avg_end_yr = batting_avg_calc(hits_end_yr,ab_end_yr)
-      return ((batting_avg_end_yr -  batting_avg_start_yr).fdiv((batting_avg_start_yr))*100).round(2) # Calculates the improvement of batting average as a percentage.
+
+      return  batting_h_ab_hash
+
     end
 
     def slugging_percentage_calc(hits,doubles,triples,home_runs, at_bats)
